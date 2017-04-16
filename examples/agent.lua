@@ -47,23 +47,11 @@ end
 skynet.register_protocol {
 	name = "client",
 	id = skynet.PTYPE_CLIENT,
-	unpack = function (msg, sz)
-		return host:dispatch(msg, sz)
-	end,
-	dispatch = function (_, _, type, ...)
-		if type == "REQUEST" then
-			local ok, result  = pcall(request, ...)
-			if ok then
-				if result then
-					send_package(result)
-				end
-			else
-				skynet.error(result)
-			end
-		else
-			assert(type == "RESPONSE")
-			error "This example doesn't support request client"
-		end
+
+        unpack = skynet.tostring,
+	dispatch = function (_, _, args, ...)
+	   print("args:"..args)
+	   send_package("Returned from server:"..args)
 	end
 }
 
@@ -71,12 +59,9 @@ function CMD.start(conf)
 	local fd = conf.client
 	local gate = conf.gate
 	WATCHDOG = conf.watchdog
-	-- slot 1,2 set at main.lua
-	host = sprotoloader.load(1):host "package"
-	send_request = host:attach(sprotoloader.load(2))
 	skynet.fork(function()
 		while true do
-			send_package(send_request "heartbeat")
+			send_package("heartbeat")
 			skynet.sleep(500)
 		end
 	end)
