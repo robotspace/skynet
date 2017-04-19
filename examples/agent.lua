@@ -3,16 +3,28 @@ local netpack = require "netpack"
 local socket = require "socket"
 local sproto = require "sproto"
 local sprotoloader = require "sprotoloader"
-
 local WATCHDOG
 local host
 local send_request
-
 local CMD = {}
 local REQUEST = {}
 local client_fd
 local mysql = require "mysql"
 local db
+
+function str_split(s, c)
+        if not s then return nil end 
+
+        local m = string.format("([^%s]+)", c)
+        local t = {}
+        local k = 1 
+        for v in string.gmatch(s, m) do
+                t[k] = v 
+                k = k + 1 
+        end 
+        return t
+end
+
 local function dump(obj)
     local getIndent, quoteStr, wrapKey, wrapVal, dumpObj
     getIndent = function(level)
@@ -57,6 +69,81 @@ local function dump(obj)
     return dumpObj(obj, 0)
 end
 
+function build_value1(t)
+   local res = "null"
+   for i=2, #(t) do --skip the first column 'type'
+      if not t[i] then
+	 t[i]=''
+      end
+      res =  res .. ',' .. t[i]
+      print( t[i])
+   end
+   return res
+end
+
+function build_value(t)
+   local res = "null"
+   local pre = '\''
+   local protocol_version = pre .. t[2] .. pre
+   local device_id = t[3]
+   local device_imei = device_id
+   local device_name = pre .. t[4] .. pre
+   local device_name111111 = device_name
+   local gprs_data_flag = pre .. t[5] .. pre
+   local date = pre ..  t[6] .. pre
+   local time = pre .. t[7] .. pre
+   local receiveTime = 0
+   local receiveTime1 = 'null'
+   local gps_time = 'null'
+   local gps_flag = pre .. t[8] .. pre
+   
+   local latitude = (t[9] or 0)/100
+   local original_lat = latitude
+   local latitude_ns = pre .. t[10] .. pre
+   print("latitude_ns:".. latitude_ns)
+   local longitude = (t[11] or 0)/100
+   local original_lng = longitude
+   local longitude_we = pre .. t[12] .. pre
+   local beidou_num = t[13]
+   local gps_num = t[14]
+   local glonass_num = t[15]
+   local horizontal_location_accuracy = t[16]
+
+   local speed = t[17]
+   local course = t[18]
+   local altitude = t[19]
+   local mileage = t[20]
+   local is_lbs = 0
+   local is_phone_position = 0
+   local lbs_lat = 0
+   local lbs_lng = 0
+
+   local mcc = t[21]
+   print("mcc:" .. mcc)
+   local mnc = t[22]
+   print("mnc:" .. mnc)
+   local lac = t[23]
+   local cell_id =pre .. t[24] .. pre
+   local gsm_signal = t[25]
+   local digital_in = t[26]
+   local digital_out = digital_in
+   local simulate1 = t[27]
+   local simulate2 = simulate1
+   local simulate3 = simulate1
+   local temperature_sensor1 = t[28]
+   local temperature_sensor2 = temperature_sensor1
+   print("temperature:"..temperature_sensor1)
+   local rfid = t[29]
+   local external_device_status = t[30]
+   local battery = t[31]
+   print("battery.."..battery)
+   local alarm_event = t[32]
+   local the_efficacy_and = '0'
+   local department_id = '0'
+   res = res .. ',' .. '0' .. ',' .. device_name111111 ..',' .. protocol_version ..',' .. device_imei ..',' .. device_name ..',' .. gprs_data_flag ..',' .. date ..',' .. time ..',' .. receiveTime ..',' .. receiveTime1 .. ',' .. gps_time .. ','.. gps_flag ..',' .. latitude .. ',' .. original_lat .. ',' .. latitude_ns .. ',' .. longitude .. ',' .. original_lng .. ',' .. longitude_we .. ',' .. beidou_num .. ',' .. gps_num .. ',' .. glonass_num .. ',' .. horizontal_location_accuracy  .. ',' .. speed .. ',' .. course .. ',' .. altitude .. ',' .. mileage .. ',' .. is_lbs .. ',' .. is_phone_position .. ',' .. lbs_lat .. ',' .. lbs_lng .. ','  .. mcc .. ',' .. mnc .. ',' .. lac .. ',' .. cell_id .. ',' .. gsm_signal .. ',' .. digital_in .. ',' .. digital_out .. ',' .. simulate1 .. ',' .. simulate2 .. ',' .. simulate3 .. ',' .. temperature_sensor1 .. ',' .. temperature_sensor2 .. ',' .. rfid .. ',' .. external_device_status .. ',' .. battery .. ',' .. alarm_event .. ',' .. the_efficacy_and .. ',' .. department_id
+   return res
+end
+
 function REQUEST:get()
 	print("get", self.what)
 	local r = skynet.call("SIMPLEDB", "lua", "get", self.what)
@@ -96,10 +183,17 @@ skynet.register_protocol {
         unpack = skynet.tostring,
 	dispatch = function (_, _, args, ...)
 	   print("args:"..args)
-	   send_package("Returned from server:"..args)
+	   local t0 = str_split(args,";")--split at ';'
+	   local t = str_split(t0[1],',')--split valuable content
+	   value = build_value(t)
+	   print("built_value:" .. value)
+--	   send_package("Returned from server:"..args)
 	   if db then
-	   res = db:query("insert into device_log values (null,0,'device_name111111',  'protocol_version',  'device_imei' ,  'device_name',  'gprs_flag',  'date',  'time' ,  123131 , null , null,  'gps_flag', null , null,  'n', null , null,  'long',  'beidou_num',  'gps_num',  'glonass_num',  '0.00000',  '0.00000', '0.00000',  'altitude',  'mileage',  '0',  '0',  null, null,  'mcc',  'mnc',  'lac' ,  'cell_id','0',  '0',  '0',  '0',  '0',  '0',  '0.00000',  '0.00000',  '0',  '0' ,  'battery',  'alarm_events',  'CRC' ,  0)")
-	   print( dump( res ) )
+--	   res = db:query("insert into device_log values (null,0,'lzp',  'protocol_version',  'device_imei' ,  'device_name',  'gprs_flag',  'date',  'time' ,  123131 , null , null,  'gps_flag', null , null,  'n', null , null,  'long',  'beidou_num',  'gps_num',  'glonass_num',  '0.00000',  '0.00000', '0.00000',  'altitude',  'mileage',  '0',  '0',  null, null,  'mcc',  'mnc',  'lac' ,  'cell_id','0',  '0',  '0',  '0',  '0',  '0',  '0.00000',  '0.00000',  '0',  '0' ,  'battery',  'alarm_events',  'CRC' ,  0)")
+
+	      res = db:query("insert into device_log values ("..value..")")
+	      
+	      print( dump( res ) )
 	   end
 	end
 }
