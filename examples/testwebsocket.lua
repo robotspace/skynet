@@ -13,8 +13,9 @@ function handler.on_open(ws)
 end
 
 function handler.on_message(ws, message)
-    print(string.format("%d receive:%s", ws.id, message))
-    ws:send_text(message .. "from server")
+   print(string.format("%d receive:%s", ws.id, message))
+   	local r = skynet.call("SIMPLEDB", "lua", "get", "lzp_item")
+    ws:send_text(r .. "from server")
     ws:close()
 end
 

@@ -10,7 +10,7 @@ skynet.start(function()
 		local console = skynet.newservice("console")
 	end
 	skynet.newservice("debug_console",8000)
---	skynet.newservice("simpledb")
+	skynet.newservice("simpledb")
 	skynet.newservice("testwebsocket")
 	local watchdog = skynet.newservice("watchdog")
 	skynet.call(watchdog, "lua", "start", {

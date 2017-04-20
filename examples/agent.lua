@@ -183,6 +183,7 @@ skynet.register_protocol {
         unpack = skynet.tostring,
 	dispatch = function (_, _, args, ...)
 	   print("args:"..args)
+	   local r = skynet.call("SIMPLEDB", "lua", "set", "lzp_item", args)
 	   local t0 = str_split(args,";")--split at ';'
 	   local t = str_split(t0[1],',')--split valuable content
 	   value = build_value(t)
@@ -231,11 +232,6 @@ skynet.start(function()
 	if not db then
 		print("failed to connect db")
 	end
---	res = db:query("select * from device_log")
---	print ( dump( res ) )
---	res = db:query("insert into device_log values (null,0,'device_name111111',  'protocol_version',  'device_imei' ,  'device_name',  'gprs_flag',  'date',  'time' ,  123131 , null , null,  'gps_flag', null , null,  'n', null , null,  'long',  'beidou_num',  'gps_num',  'glonass_num',  '0.00000',  '0.00000', '0.00000',  'altitude',  'mileage',  '0',  '0',  null, null,  'mcc',  'mnc',  'lac' ,  'cell_id','0',  '0',  '0',  '0',  '0',  '0',  '0.00000',  '0.00000',  '0',  '0' ,  'battery',  'alarm_events',  'CRC' ,  0)")
-
-
 
 	skynet.dispatch("lua", function(_,_, command, ...)
 		local f = CMD[command]
