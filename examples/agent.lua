@@ -184,6 +184,11 @@ skynet.register_protocol {
 	dispatch = function (_, _, args, ...)
 	   print("args:"..args)
 	   local r = skynet.call("SIMPLEDB", "lua", "set", "lzp_item", args)
+	   local split_content = str_split(args,",")
+	   if(split_content[1] =="putPhonePosition")
+	   then
+	      print("putPhonePosition:"..split_content[2]..split_content[3])
+	   else
 	   local t0 = str_split(args,";")--split at ';'
 	   local t = str_split(t0[1],',')--split valuable content
 	   value = build_value(t)
@@ -196,6 +201,8 @@ skynet.register_protocol {
 	      
 	      print( dump( res ) )
 	   end
+	   end
+	   
 	end
 }
 
