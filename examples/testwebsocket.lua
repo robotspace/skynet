@@ -8,15 +8,33 @@ local sockethelper = require "http.sockethelper"
 require "skynet.manager"	-- import skynet.register
 
 local handler = {}
+
+
+function str_split(s, c)
+        if not s then return nil end 
+
+        local m = string.format("([^%s]+)", c)
+        local t = {}
+        local k = 1 
+        for v in string.gmatch(s, m) do
+                t[k] = v 
+                k = k + 1 
+        end 
+        return t
+end
+
 function handler.on_open(ws)
     print(string.format("%d::open", ws.id))
 end
 
 function handler.on_message(ws, message)
    print(string.format("%d receive:%s", ws.id, message))
-   if(message == "set") then
+
+   	   local split_content = str_split(message,",")
+	   print(split_content[1])
+	   if(split_content[1] == "notify") then
       print("entrance into set case...")
-   skynet.call("WATCHDOG","lua","push","0123456",message)
+      skynet.call("WATCHDOG","lua","push",split_content[2],split_content[2])
    else
    local r = skynet.call("SIMPLEDB", "lua", "get", "lzp_item")
    ws:send_text(r .. "from server")

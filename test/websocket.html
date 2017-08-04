@@ -9,8 +9,8 @@
 
     ws.onopen = function(){
      alert("open");
-    ws.send('WebSocket');
-         ws.send('set'); 
+ 
+         ws.send('notify,0123456,hello world'); 
     };
     ws.onmessage = function(ev){
      alert(ev.data);

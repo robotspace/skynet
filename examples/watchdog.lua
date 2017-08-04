@@ -57,8 +57,16 @@ end
 function CMD.push(uid,msg)
    print("watchdog, get push command")
    local client_fd = fd[uid]
-   local a = agent[client_fd]
-   skynet.send(a, "lua", "push",msg)
+   if client_fd ~= nil  then
+      local a = agent[client_fd]
+      if a~=nil then
+	 skynet.send(a, "lua", "push",msg)
+      else
+	 print("invalid fd.")
+      end
+   else
+      print("invalid uid.")
+   end
 end
    
 skynet.start(function()
