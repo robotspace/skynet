@@ -1,10 +1,11 @@
 local skynet = require "skynet"
 local netpack = require "netpack"
-
+require "skynet.manager"	-- import skynet.register
 local CMD = {}
 local SOCKET = {}
 local gate
 local agent = {}
+local fd = {}
 
 function SOCKET.open(fd, addr)
 	skynet.error("New client from : " .. addr)
@@ -48,6 +49,18 @@ function CMD.close(fd)
 	close_agent(fd)
 end
 
+function CMD.set_uid(client_fd,uid)
+   fd[uid] = client_fd
+   print("set uid: "..uid)
+end
+
+function CMD.push(uid,msg)
+   print("watchdog, get push command")
+   local client_fd = fd[uid]
+   local a = agent[client_fd]
+   skynet.send(a, "lua", "push",msg)
+end
+   
 skynet.start(function()
 	skynet.dispatch("lua", function(session, source, cmd, subcmd, ...)
 		if cmd == "socket" then
@@ -61,4 +74,5 @@ skynet.start(function()
 	end)
 
 	gate = skynet.newservice("gate")
+	skynet.register "WATCHDOG"
 end)

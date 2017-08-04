@@ -106,7 +106,9 @@ while true do
 		else
 		   --		   send_request("REQUEST", "MGV002,861694034616795,GongAn0001,R,190417,100703.00,V,4001.6080,N,11616.3807,E,0,00,0,99.9,0.00,149.38,-8.9,54.4,460,00,1019,7ec5, 1,,0,0,0,153,0,0,0,0,87,Timer;28!")
 		   --http://url/index.php?m=Api&c=preview&a=getPhonePosition&phone_number=1396969658&police_name=minjingname&lng=116.325066&lat=39.93702&police_id=33
-		   		   send_request("putPhonePosition", "1396969658,minjingname,116.325066,39.93702,33")		   
+		   --send_request("putPhonePosition", "1396969658,minjingname,116.325066,39.93702,33")
+		   send_request("setUID", "0123456")
+		   
 		end
 	else
 		socket.usleep(100)

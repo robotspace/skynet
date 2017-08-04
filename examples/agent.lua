@@ -183,17 +183,22 @@ skynet.register_protocol {
         unpack = skynet.tostring,
 	dispatch = function (_, _, args, ...)
 	   print("args:"..args)
+	   send_package("Returned from server:"..args)
 	   local r = skynet.call("SIMPLEDB", "lua", "set", "lzp_item", args)
 	   local split_content = str_split(args,",")
 	   if(split_content[1] =="putPhonePosition")
 	   then
 	      print("putPhonePosition:"..split_content[2]..split_content[3])
+	   elseif(split_content[1] == "setUID")
+		then
+		   print("set uid...")
+		   skynet.call(WATCHDOG, "lua", "set_uid", client_fd, split_content[2])
 	   else
 	   local t0 = str_split(args,";")--split at ';'
 	   local t = str_split(t0[1],',')--split valuable content
 	   value = build_value(t)
 	   print("built_value:" .. value)
---	   send_package("Returned from server:"..args)
+
 	   if db then
 --	   res = db:query("insert into device_log values (null,0,'lzp',  'protocol_version',  'device_imei' ,  'device_name',  'gprs_flag',  'date',  'time' ,  123131 , null , null,  'gps_flag', null , null,  'n', null , null,  'long',  'beidou_num',  'gps_num',  'glonass_num',  '0.00000',  '0.00000', '0.00000',  'altitude',  'mileage',  '0',  '0',  null, null,  'mcc',  'mnc',  'lac' ,  'cell_id','0',  '0',  '0',  '0',  '0',  '0',  '0.00000',  '0.00000',  '0',  '0' ,  'battery',  'alarm_events',  'CRC' ,  0)")
 
@@ -225,6 +230,12 @@ function CMD.disconnect()
 	-- todo: do something before exit
 	skynet.exit()
 end
+
+function CMD.push(msg)
+   print("agent, get push command")
+	   send_package("Push from server:"..msg)
+end
+
 
 skynet.start(function()
       	db=mysql.connect({

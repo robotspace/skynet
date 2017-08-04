@@ -5,7 +5,7 @@ local websocket = require "websocket"
 local httpd = require "http.httpd"
 local urllib = require "http.url"
 local sockethelper = require "http.sockethelper"
-
+require "skynet.manager"	-- import skynet.register
 
 local handler = {}
 function handler.on_open(ws)
@@ -14,8 +14,13 @@ end
 
 function handler.on_message(ws, message)
    print(string.format("%d receive:%s", ws.id, message))
-   	local r = skynet.call("SIMPLEDB", "lua", "get", "lzp_item")
-    ws:send_text(r .. "from server")
+   if(message == "set") then
+      print("entrance into set case...")
+   skynet.call("WATCHDOG","lua","push","0123456",message)
+   else
+   local r = skynet.call("SIMPLEDB", "lua", "get", "lzp_item")
+   ws:send_text(r .. "from server")
+   end
     ws:close()
 end
 
@@ -45,4 +50,5 @@ skynet.start(function()
        socket.start(id)
        pcall(handle_socket, id)
     end)
+    skynet.register "WEBSOCKET"
 end)
