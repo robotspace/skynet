@@ -202,7 +202,7 @@ skynet.register_protocol {
 	   if db then
 --	   res = db:query("insert into device_log values (null,0,'lzp',  'protocol_version',  'device_imei' ,  'device_name',  'gprs_flag',  'date',  'time' ,  123131 , null , null,  'gps_flag', null , null,  'n', null , null,  'long',  'beidou_num',  'gps_num',  'glonass_num',  '0.00000',  '0.00000', '0.00000',  'altitude',  'mileage',  '0',  '0',  null, null,  'mcc',  'mnc',  'lac' ,  'cell_id','0',  '0',  '0',  '0',  '0',  '0',  '0.00000',  '0.00000',  '0',  '0' ,  'battery',  'alarm_events',  'CRC' ,  0)")
 
-	      res = db:query("insert into device_log values ("..value..")")
+--	      res = db:query("insert into device_log values ("..value..")")
 	      
 	      print( dump( res ) )
 	   end
@@ -241,7 +241,7 @@ skynet.start(function()
       	db=mysql.connect({
 		host="127.0.0.1",
 		port=3306,
-		database="gps",
+		database="liaokao_dev",
 		user="root",
 		password="",
 		max_packet_size = 1024 * 1024,
