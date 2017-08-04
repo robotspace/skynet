@@ -34,7 +34,7 @@ function handler.on_message(ws, message)
 	   print(split_content[1])
 	   if(split_content[1] == "notify") then
       print("entrance into set case...")
-      skynet.call("WATCHDOG","lua","push",split_content[2],split_content[2])
+      skynet.call("WATCHDOG","lua","push",split_content[2],split_content[3])
    else
    local r = skynet.call("SIMPLEDB", "lua", "get", "lzp_item")
    ws:send_text(r .. "from server")
