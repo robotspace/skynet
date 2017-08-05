@@ -29,12 +29,14 @@ end
 
 function handler.on_message(ws, message)
    print(string.format("%d receive:%s", ws.id, message))
-
-   	   local split_content = str_split(message,",")
-	   print(split_content[1])
-	   if(split_content[1] == "notify") then
+   local r = -1
+   local split_content = str_split(message,",")
+   print(split_content[1])
+   if(split_content[1] == "notify") then
       print("entrance into set case...")
-      skynet.call("WATCHDOG","lua","push",split_content[2],split_content[3])
+      r = skynet.call("WATCHDOG","lua","push",split_content[2],split_content[3])
+      print("notify result:" ..r)
+      ws:send_text(r.."")--not integer but only string can been sent,why?
    else
    local r = skynet.call("SIMPLEDB", "lua", "get", "lzp_item")
    ws:send_text(r .. "from server")
