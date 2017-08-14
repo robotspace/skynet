@@ -5,7 +5,7 @@
 </head>
 <body>   
   <script>
-    var ws = new WebSocket('ws://127.0.0.1:8001/ws');
+    var ws = new WebSocket('ws://123.57.184.119:8001/ws');
 
     ws.onopen = function(){
      alert("open");
@@ -23,5 +23,30 @@
     };
 
   </script>
+
+<p align="center">
+<button style='font-size:200px'onclick="btnAction()">打印</button>
+</p>
+<script>
+        function btnAction()
+        {   var ws = new WebSocket('ws://123.57.184.119:8001/ws');
+
+    ws.onopen = function(){
+     alert("open");
+ 
+         ws.send('notify,0123456,hello world'); 
+    };
+    ws.onmessage = function(ev){
+     alert(ev.data);
+    };
+    ws.onclose = function(ev){
+     alert("close");
+    };
+    ws.onerror = function(ev){
+     alert("error");
+    };
+}
+
+</script>
 </body>
 </html>
