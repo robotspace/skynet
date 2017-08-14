@@ -36,7 +36,11 @@ function handler.on_message(ws, message)
       print("entrance into set case...")
       r = skynet.call("WATCHDOG","lua","push",split_content[2],split_content[3])
       print("notify result:" ..r)
-      ws:send_text(r.."")--not integer but only string can been sent,why?
+      if(r == 0) then
+      ws:send_text("下发成功")--not integer but only string can been sent,why?
+      else
+      ws:send_text("下发失败")
+      end   
    else
    local r = skynet.call("SIMPLEDB", "lua", "get", "lzp_item")
    ws:send_text(r .. "from server")
